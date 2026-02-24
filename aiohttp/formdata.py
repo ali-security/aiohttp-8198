@@ -81,7 +81,6 @@ class FormData:
                     "content_transfer_encoding must be an instance"
                     " of str. Got: %s" % content_transfer_encoding
                 )
-            headers[hdrs.CONTENT_TRANSFER_ENCODING] = content_transfer_encoding
             self._is_multipart = True
 
         self._fields.append((type_options, headers, value))

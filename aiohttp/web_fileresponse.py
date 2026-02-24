@@ -3,6 +3,8 @@ import mimetypes
 import os
 import pathlib
 import sys
+from contextlib import suppress
+from stat import S_ISREG
 from typing import (  # noqa
     IO,
     TYPE_CHECKING,
@@ -128,18 +130,23 @@ class FileResponse(StreamResponse):
         return await super().prepare(request)
 
     async def prepare(self, request: "BaseRequest") -> Optional[AbstractStreamWriter]:
+        st = None
         filepath = self._path
 
         gzip = False
         if "gzip" in request.headers.get(hdrs.ACCEPT_ENCODING, ""):
             gzip_path = filepath.with_name(filepath.name + ".gz")
 
-            if gzip_path.is_file():
-                filepath = gzip_path
-                gzip = True
+            with suppress(OSError):
+                if gzip_path.is_file():
+                    lst = gzip_path.lstat()
+                    if S_ISREG(lst.st_mode):
+                        filepath = gzip_path
+                        gzip = True
+                        st = lst
 
         loop = asyncio.get_event_loop()
-        st: os.stat_result = await loop.run_in_executor(None, filepath.stat)
+        st: os.stat_result = st or await loop.run_in_executor(None, filepath.stat)
 
         etag_value = f"{st.st_mtime_ns:x}-{st.st_size:x}"
         last_modified = st.st_mtime
