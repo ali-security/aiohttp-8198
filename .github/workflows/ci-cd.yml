@@ -196,7 +196,6 @@ jobs:
     if: always()
 
     needs:
-    - lint
     - test
 
     runs-on: ubuntu-latest
