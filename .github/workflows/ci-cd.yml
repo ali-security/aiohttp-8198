@@ -246,7 +246,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: dist
+        name: dist-sdist
         path: dist
 
   build-wheels:
@@ -310,7 +310,7 @@ jobs:
         CIBW_SKIP: cp312-* pp*
     - uses: actions/upload-artifact@v4
       with:
-        name: dist
+        name: dist-${{ matrix.os }}-${{ matrix.qemu }}
         path: ./wheelhouse/*.whl
 
   deploy:
@@ -340,8 +340,9 @@ jobs:
     - name: Download distributions
       uses: actions/download-artifact@v4
       with:
-        name: dist
+        pattern: dist-*
         path: dist
+        merge-multiple: true
     - name: Collected dists
       run: |
         tree dist
