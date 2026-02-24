@@ -61,7 +61,7 @@ jobs:
         make mypy
     - name: Install libenchant
       run: |
-        sudo apt install libenchant-2-dev
+        sudo apt update && sudo apt install libenchant-2-dev
     - name: Install spell checker
       run: |
         pip install -r requirements/doc-spelling.txt -c requirements/constraints.txt
