@@ -181,6 +181,13 @@ async def test_secure_https_proxy_absolute_path(
 )
 @pytest.mark.parametrize("web_server_endpoint_type", ("https",))
 @pytest.mark.usefixtures("loop")
+@pytest.mark.skipif(
+    ASYNCIO_SUPPORTS_TLS_IN_TLS, reason="asyncio on this python supports TLS in TLS"
+)
+@pytest.mark.filterwarnings(r"ignore:.*ssl.OP_NO_SSL*")
+# Filter out the warning from
+# https://github.com/abhinavsingh/proxy.py/blob/30574fd0414005dfa8792a6e797023e862bdcf43/proxy/common/utils.py#L226
+# otherwise this test will fail because the proxy will die with an error.
 async def test_https_proxy_unsupported_tls_in_tls(
     client_ssl_ctx,
     secure_proxy_url,
@@ -230,13 +237,16 @@ async def test_https_proxy_unsupported_tls_in_tls(
         ClientConnectionError,
         match=expected_exception_reason,
     ) as conn_err:
-        await sess.get(url, proxy=secure_proxy_url, ssl=client_ssl_ctx)
+        async with sess.get(url, proxy=secure_proxy_url, ssl=client_ssl_ctx):
+            pass
 
-    assert type(conn_err.value.__cause__) == TypeError
+    assert isinstance(conn_err.value.__cause__, TypeError)
     assert match_regex(f"^{type_err!s}$", str(conn_err.value.__cause__))
 
     await sess.close()
     await conn.close()
+
+    await asyncio.sleep(0.1)
 
 
 @pytest.mark.skipif(
