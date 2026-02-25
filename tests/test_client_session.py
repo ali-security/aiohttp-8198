@@ -843,7 +843,8 @@ async def test_client_session_timeout_zero() -> None:
     timeout = client.ClientTimeout(total=10, connect=0, sock_connect=0, sock_read=0)
     try:
         async with ClientSession(timeout=timeout) as session:
-            await session.get("http://example.com")
+            async with session.get("http://example.com"):
+                pass
     except asyncio.TimeoutError:
         pytest.fail("0 should disable timeout.")
 
