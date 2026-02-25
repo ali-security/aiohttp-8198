@@ -17,3 +17,4 @@ issue_format = "`#{issue} <https://github.com/aio-libs/aiohttp/issues/{issue}>`_
 test-command = ""
 # don't build PyPy wheels, install from source instead
 skip = "pp*"
+before-build = "pip install wheel==0.41.2"
