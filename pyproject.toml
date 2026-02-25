@@ -1,7 +1,6 @@
 [build-system]
 requires = [
     "setuptools >= 46.4.0",
-    "wheel==0.41.2",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -18,5 +17,3 @@ issue_format = "`#{issue} <https://github.com/aio-libs/aiohttp/issues/{issue}>`_
 test-command = ""
 # don't build PyPy wheels, install from source instead
 skip = "pp*"
-before-all = "pip install --index-url https://pypi.org/simple wheel==0.41.2"
-before-build = "pip install --index-url https://pypi.org/simple wheel==0.41.2"
