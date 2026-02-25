@@ -17,10 +17,7 @@ async def test_simple_server(aiohttp_raw_server, aiohttp_client) -> None:
     txt = await resp.text()
     assert txt == "/path/to"
 
-@pytest.mark.skipif(
-    helpers.IS_WINDOWS and helpers.PY_311 and helpers.NO_EXTENSIONS,
-    reason="Test behavior differs on Windows Python 3.11 without C extensions",
-)
+
 @pytest.mark.xfail(
     not helpers.NO_EXTENSIONS,
     raises=client.ServerDisconnectedError,
